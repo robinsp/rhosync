@@ -39,7 +39,7 @@ class SourceAdapter
       config =Rails::Configuration.new
       if config.database_configuration[RAILS_ENV]["adapter"]=="mysql"
         max_sql_statement=64000
-        p "MySQL optimized sync"
+        Rails.logger.debug "MySQL optimized sync"
         sql="INSERT INTO object_values(pending_id,source_id,object,attrib,value,user_id,attrib_type) VALUES"
         count=0
         @result.keys.each do |objkey|
@@ -71,7 +71,7 @@ class SourceAdapter
         sql.chop!
         ActiveRecord::Base.connection.execute sql
       else  # sqlite and others dont support multiple row inserts from one SQL statement
-        p "Sync for SQLite and other databases"
+        Rails.logger.debug "Sync for SQLite and other databases"
         count=0
         @result.keys.each do |objkey|
           obj=@result[objkey]
@@ -96,7 +96,7 @@ class SourceAdapter
       end
 
     else
-      p "No objects returned from query"
+      Rails.logger.debug "No objects returned from query"
     end
   end
 
