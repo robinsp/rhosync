@@ -26,6 +26,14 @@ class ObjectValue < ActiveRecord::Base
   has_attached_file :blob
   
   attr_accessor :db_operation, :oo
+  
+  validates_presence_of :attrib, :value
+  
+  def validate
+    ["attrib_type", "id"].each do |invalid_name|
+      errors.add(:attrib, "'#{invalid_name}' is not a valid attribute name") if attrib == invalid_name  
+    end
+  end
 
   def hash_from_data(attrib=nil,object=nil,update_type=nil,source_id=nil,user_id=nil,value=nil,random=nil)
     self.class.hash_from_data(attrib,object,update_type,source_id,user_id,value,random)
