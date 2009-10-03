@@ -153,9 +153,9 @@ class Source < ActiveRecord::Base
       # look for source adapter page method. if so do paged query 
       # see spec at http://wiki.rhomobile.com/index.php/Writing_RhoSync_Source_Adapters#Paged_Queries
       if defined? source_adapter.page 
-  #      source_adapter.page(0)
+        source_adapter.page(0)
         # then do the rest in background using the page_query.rb script
-        cmd="ruby script/runner ./jobs/page_query.rb #{current_user.id} #{id}"
+        cmd="ruby script/runner ./jobs/page_query.rb #{current_user.id} #{id} 1"
         p "Executing background job: #{cmd} #{current_user.id.to_s}"
         begin 
           Bj.submit cmd,:tag => current_user.id.to_s
@@ -187,7 +187,7 @@ class Source < ActiveRecord::Base
   
   # used by background job for paged query (page_query.rb script)
   # queries the second (1-th) through last page
-  def backpages
+  def backpages(pagenum=1)
     # first detect if some background (backpages) job is already working against this source and user
     logger.info "Backpages called"
 =begin
@@ -213,7 +213,6 @@ class Source < ActiveRecord::Base
       raise e
     end
     
-    pagenum=0  
     result=true
     @source=self
     while result 
