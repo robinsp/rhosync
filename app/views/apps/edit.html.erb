@@ -1,9 +1,16 @@
-<body onload="if (document.getElementsByName('app[anonymous]')[0].checked==true) {
-   document.getElementById('subscribers').style.visibility='hidden';
+<% content_for :page_scripts do %>
+function setVisiblityOfSubsribers() {
+	if (document.getElementsByName('app[anonymous]')[0].checked==true) {
+	   document.getElementById('subscribers').style.visibility='hidden';
+	}
+	else{
+	  document.getElementById('subscribers').style.visibility='visible';
+	}
 }
-else{
-  document.getElementById('subscribers').style.visibility='visible';
-}">
+<%end%>
+
+<% content_for :body_onload, "setVisiblityOfSubsribers();"%>
+	
 <h3>Editing Application</h3>
 
 <% form_for(@app) do |f| %>
