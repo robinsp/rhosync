@@ -24,86 +24,83 @@ function setVisibilityOfAddSubscriber() {
 <h3>Editing Application</h3>
 
 <% form_for(@app) do |f| %>
-  <%= f.error_messages %>
-<%= f.label :name %>&nbsp;<%= f.text_field :name %><br/>
-<%= f.label :description %><br/>
-<%=  f.text_area :description,:rows=>2,:cols=>40  %><br/>
-<p><b>Sources</b> &nbsp;<%=link_to "(Refresh)",:controller=>"apps",:action=>"refresh",:id=>@app.id%>
-<table>
-<% @app.sources.each do |source| %>
-<tr>
-<td><%= link_to  source.name, edit_app_source_path(@app, source)%></td>
-<td><%= link_to 'X',app_source_path(@app,source), :confirm => 'Are you sure?', :method => :delete %></td>
-<!--<td><%= link_to "Refresh",:controller=>"sources",:action=>"refresh",:id=>source.id%></td>-->
-</tr>
-<%end %>
-</table>
-<p>
+	<%= f.error_messages %>
+	<%= f.label :name %>&nbsp;<%= f.text_field :name %><br/>
+	<%= f.label :description %><br/>
+	<%= f.text_area :description,:rows=>2,:cols=>40  %><br/>
+	<p>
+		<b>Sources</b> &nbsp;<%=link_to "(Refresh)",:controller=>"apps",:action=>"refresh",:id=>@app.id %>
+	<table>
+		<% @app.sources.each do |source| %>
+		<tr>
+			<td><%= link_to  source.name, edit_app_source_path(@app, source)%></td>
+			<td><%= link_to 'X',app_source_path(@app,source), :confirm => 'Are you sure?', :method => :delete %></td>
+			<!--<td><%= link_to "Refresh",:controller=>"sources",:action=>"refresh",:id=>source.id%></td>-->
+		</tr>
+		<%end %>
+	</table>
+	<p></p>
+	<p><%=link_to 'Add Source', new_app_source_path(@app) %></p>
 
-</p>
-<p>
-<%=link_to 'Add Source', new_app_source_path(@app) %>
-</p>
-<p>
-  <%=f.submit "Update Application Settings"%>
-</p>
-<h4>User Access</h4>
-<% if @app.authenticates? %>
+	<p><%=f.submit "Update Application Settings"%></p>
 
-<p>Delegated to backend application. Not handled directly by rhosync.</p>
-
-<% else %>
-
-<%=f.check_box :anonymous,:onchange=>"setVisiblityOfSubsribers();" %> Anonymous (Allow All Users)
-<%=f.check_box :autoregister %> Auto-register
-<%=f.check_box :stop_subscriptions,:onchange=>"setVisibilityOfAddSubscriber();"
-%> Stop Subscriptions
-<%end%>
+	<h4>User Access</h4>
+	<% if @app.authenticates? %>
+		<p>Delegated to backend application. Not handled directly by rhosync.</p>
+	<% else %>
+		<%=f.check_box :anonymous,:onchange=>"setVisiblityOfSubsribers();" %> Anonymous (Allow All Users)
+		<%=f.check_box :autoregister %> Auto-register
+		<%=f.check_box :stop_subscriptions,:onchange=>"setVisibilityOfAddSubscriber();"%> Stop Subscriptions
+	<%end%>
 </form>
-<div id="subscribers">
-<h4>Subscribed Users</h4>
-<table>
-<% @app.users.each do |user| %>
-<%sub=Membership.find_by_app_id_and_user_id @app.id,user.id%>
-<tr><td><%=link_to user.login,{:action=>"getcred",:id=>@app.id,:sub_id=>sub.id}%></td><td><%=link_to "(unsubscribe)",{:action=>:unsubscribe,:id=>@app.id,:subscriber=>user.login}%></td></tr>
-<%end%>
-</table>
-<%if @app.stop_subscriptions!=true%>
-<div id="add_subscriber">
-<%form_for(:subscribe, @app,:url=>{:controller=>"apps",:action=>"subscribe"})  do |f|%>
-<input type="hidden" name="app_id" value="<%=@app.id%>"/>
-<select name="credential[subscriber]">
-<%@users.each do |user|%>
-<option value="<%=user.login%>"><%=user.login%></option>
-<%end%>
-</select>
-<div>
-  <i>Credential URL <input name="credential[url]" size="40">&nbsp;Login <input name="credential[login]" size="12" />&nbsp;Password <input name="credential[password]" size="12" />&nbsp;Token<input name="credential[token]" /></i>
-</div>
-<%=f.submit "Subscribe User" %>
-<%end%>
-</div>
 
-<% end %>
-<%end%>
+<div id="subscribers">
+	<h4>Subscribed Users</h4>
+	<table>
+	<% @app.users.each do |user| %>
+		<%sub=Membership.find_by_app_id_and_user_id @app.id,user.id%>
+		<tr>
+			<td><%=link_to user.login,{:action=>"getcred",:id=>@app.id,:sub_id=>sub.id}%></td><td><%=link_to "(unsubscribe)",{:action=>:unsubscribe,:id=>@app.id,:subscriber=>user.login}%></td>
+		</tr>
+	<%end%>
+	</table>
+	
+	<%if @app.stop_subscriptions!=true%>
+		<div id="add_subscriber">
+			<%form_for(:subscribe, @app,:url=>{:controller=>"apps",:action=>"subscribe"})  do |f|%>
+				<input type="hidden" name="app_id" value="<%=@app.id%>"/>
+				<select name="credential[subscriber]">
+					<%@users.each do |user|%>
+						<option value="<%=user.login%>"><%=user.login%></option>
+					<%end%>
+				</select>
+				<div>
+			  		<i>Credential URL <input name="credential[url]" size="40">&nbsp;Login <input name="credential[login]" size="12" />&nbsp;Password <input name="credential[password]" size="12" />&nbsp;Token<input name="credential[token]" /></i>
+				</div>
+				<%=f.submit "Subscribe User" %>
+			<%end%>
+		</div>
+	<% end %>
+	<%end%>
 </div>
 
 <h4>Administrator Access</h4>
 <table>
-<%@admins.each do |admin|%>
-<tr><td><%=link_to admin.user.login+" (remove admin rights)",{:action=>:unadminister,:id=>@app.id,:administrator=>admin.user.login}%></td></tr>
+	<%@admins.each do |admin|%>
+		<tr>
+			<td><%=link_to admin.user.login+" (remove admin rights)",{:action=>:unadminister,:id=>@app.id,:administrator=>admin.user.login}%></td>
+		</tr>
+	<%end%>
 </table>
-<%end%>
-<%form_for(:administer, @app,:url=>{:controller=>"apps",:action=>"administer",:id=>@app.id})  do |f|%>
-<select name="administrator">
-<%@users.each do |user|%>
-<option value="<%=user.login%>"><%=user.login%></option>
-<%end #select%>
-</select>
-<%= f.submit "Add Administrator" %>
-<%end # form%>
 
-<p>
-<%= link_to 'Back to applications list', apps_path %>
-</p>
+<% form_for(:administer, @app,:url=>{:controller=>"apps",:action=>"administer",:id=>@app.id})  do |f|%>
+	<select name="administrator">
+		<%@users.each do |user|%>
+			<option value="<%=user.login%>"><%=user.login%></option>
+		<%end%>
+	</select>
+	<%= f.submit "Add Administrator" %>
+<%end%>
+
+<p><%= link_to 'Back to applications list', apps_path %></p>
 </body>
