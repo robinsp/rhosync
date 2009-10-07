@@ -7,12 +7,18 @@
   <title>Apps: <%= controller.action_name %></title>
   <%= stylesheet_link_tag 'scaffold' %>
   
-  <% javascript_tag do %>
-  	<%= yield :page_scripts -%>
-  <%end -%>
+  <% if page_scripts = (yield :page_scripts)%>
+	  <%= javascript_tag page_scripts %>
+  <%end%>
   
 </head>
-<% content_tag :body, :onload => "#{yield :body_onload}" do %>
+<% 
+	body_html_attributes = {}
+	unless ( onload = (yield :body_onload) ).blank?
+		body_html_attributes[:onload] = onload
+	end 
+%>
+<% content_tag :body, body_html_attributes do %>
 	<p style="color: green"><%= flash[:notice] %></p>
 	<p style="color: red"><%= flash[:error] %></p>
 	<%= yield  %>

@@ -1,5 +1,7 @@
 <h3>Your Administered Apps</h3>
-<%=@current_user.login%><%if @apps and @apps.size>0%>, below are the RhoSync applications that you are an administrator of.
+
+<%if @apps and @apps.size>0%>
+<p><%=@current_user.login%>, below are the RhoSync applications that you are an administrator of.</p>
 <table>
   <tr>
     <th>Name</th>
@@ -19,15 +21,16 @@
   <% end %>
 </table>
 <%else%>
-, you have no administered apps.
+<p><%=@current_user.login%>, you have no administered apps.</p>
 <%end%>
 <br/>
 <%= link_to 'Create new app', new_app_path %><p/>
 
 <p/>
 <h3>Your Subscribed Apps</h3>
-<table>
+
 <%if @subapps and @subapps.size>0%>These are the apps you are subscribed to.
+<table>
   <tr>
     <th>Name</th>
     <th>Description</th>
@@ -53,14 +56,14 @@
   <%end%>
   <td><%=link_to 'X',url_for(:action=>"unsubscribe",:id=>1,:app_id=>app.id)%></td>
 </tr>
-
+</table>
 <%end%>
 <%else%>
-You have no subscribed apps.
+<p>You have no subscribed apps.</p>
 <%end%>
-</table>
+
 <h3>Subscribe to an App</h3>
-<form action='<%=url_for(:controller=>"apps",:id=>1,:action=>"subscribe")%>'/>
+<form action='<%=url_for(:controller=>"apps",:id=>1,:action=>"subscribe")%>'>
 <select id="app_id" name="app_id">
 <%
 first=true
@@ -68,7 +71,7 @@ first=true
 <%if app.stop_subscriptions!=true %>
 <option value="<%=app.id%>"
 <%if first%>
-selected
+selected="selected"
 <%end%>
 ><%=app.name%></option>
 <%
@@ -79,7 +82,7 @@ end%>
 <% if @current_user.login=="anonymous"%>
 Login&nbsp;<input name="login"/>Password&nbsp;<input name="password"/>Email&nbsp;<input name="email"/>
 <%end%>
-<input type="submit" value="Subscribe">
+<input type="submit" value="Subscribe"/>
 </form>
 <p/>
 <h3>Your Clients</h3>

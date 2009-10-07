@@ -30,6 +30,7 @@ function setVisibilityOfAddSubscriber() {
 	<%= f.text_area :description,:rows=>2,:cols=>40  %><br/>
 	<p>
 		<b>Sources</b> &nbsp;<%=link_to "(Refresh)",:controller=>"apps",:action=>"refresh",:id=>@app.id %>
+	</p>
 	<table>
 		<% @app.sources.each do |source| %>
 		<tr>
@@ -52,18 +53,20 @@ function setVisibilityOfAddSubscriber() {
 		<%=f.check_box :autoregister %> Auto-register
 		<%=f.check_box :stop_subscriptions,:onchange=>"setVisibilityOfAddSubscriber();"%> Stop Subscriptions
 	<%end%>
-</form>
+<%end%>
 
 <div id="subscribers">
 	<h4>Subscribed Users</h4>
-	<table>
-	<% @app.users.each do |user| %>
-		<%sub=Membership.find_by_app_id_and_user_id @app.id,user.id%>
-		<tr>
-			<td><%=link_to user.login,{:action=>"getcred",:id=>@app.id,:sub_id=>sub.id}%></td><td><%=link_to "(unsubscribe)",{:action=>:unsubscribe,:id=>@app.id,:subscriber=>user.login}%></td>
-		</tr>
+	<% unless @app.users.empty? %>
+		<table>
+		<% @app.users.each do |user| %>
+			<%sub=Membership.find_by_app_id_and_user_id @app.id,user.id%>
+			<tr>
+				<td><%=link_to user.login,{:action=>"getcred",:id=>@app.id,:sub_id=>sub.id}%></td><td><%=link_to "(unsubscribe)",{:action=>:unsubscribe,:id=>@app.id,:subscriber=>user.login}%></td>
+			</tr>
+		<%end%>
+		</table>
 	<%end%>
-	</table>
 	
 	<%if @app.stop_subscriptions!=true%>
 		<div id="add_subscriber">
@@ -75,13 +78,12 @@ function setVisibilityOfAddSubscriber() {
 					<%end%>
 				</select>
 				<div>
-			  		<i>Credential URL <input name="credential[url]" size="40">&nbsp;Login <input name="credential[login]" size="12" />&nbsp;Password <input name="credential[password]" size="12" />&nbsp;Token<input name="credential[token]" /></i>
+			  		<i>Credential URL <input name="credential[url]" size="40"/>&nbsp;Login <input name="credential[login]" size="12" />&nbsp;Password <input name="credential[password]" size="12" />&nbsp;Token<input name="credential[token]" /></i>
 				</div>
 				<%=f.submit "Subscribe User" %>
 			<%end%>
 		</div>
 	<% end %>
-	<%end%>
 </div>
 
 <h4>Administrator Access</h4>
@@ -103,4 +105,4 @@ function setVisibilityOfAddSubscriber() {
 <%end%>
 
 <p><%= link_to 'Back to applications list', apps_path %></p>
-</body>
+
