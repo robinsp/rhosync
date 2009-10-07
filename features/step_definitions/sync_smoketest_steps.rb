@@ -15,11 +15,7 @@ Given /^a clean database$/ do
 end
 
 Given /^sample source adapters loaded from fixtures$/ do
-  # TODO: This is a duplication of the db:bootstrap rake task. Refactor!
-  Fixtures.create_fixtures(File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate'), 'sources')      
-  Fixtures.create_fixtures(File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate'), 'apps')
-  Fixtures.create_fixtures(File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate'), 'users')      
-  Fixtures.create_fixtures(File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate'), 'administrations')
+  TestDataUtil.load_sample_source_adapters
 end
 
 Then /^database has no "([^\"]*)"$/ do |model|
