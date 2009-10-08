@@ -65,5 +65,9 @@ class User < ActiveRecord::Base
       p "Result of client ping: #{@result}" if @result
     end
     @result
-  end 
+  end
+  
+  def administers
+    App.find(:all, :joins => :administrations, :conditions => {:administrations => {:user_id => self}})
+  end
 end

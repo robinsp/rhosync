@@ -32,6 +32,33 @@ describe User do
       u.errors.on(:login).should_not be_nil
     end.should_not change(User, :count)
   end
+  
+  describe "administers()" do
+    def create_administration(app, user)
+      Administration.create!(:app => app, :user => user)
+    end
+    
+    it "should find the applications the user is adminitrator of" do
+      guitar_store = Factory.create(:app, :name => "GuitarStore")
+      piano_store = Factory.create(:app, :name => "PianoStore")
+      
+      musician = Factory.create(:user)
+      create_administration(guitar_store, musician)
+      create_administration(piano_store, musician)
+      
+      guitarist = Factory.create(:user)
+      create_administration(guitar_store, guitarist)
+      
+      truck_driver = Factory.create(:user)
+      
+      truck_driver.administers.should be_empty
+      
+      guitarist.administers.should include(guitar_store)
+      guitarist.administers.should_not include(piano_store)
+      
+      musician.administers.should include(piano_store, guitar_store)
+    end
+  end
 
   describe 'allows legitimate logins:' do
     ['123', '1234567890_234567890_234567890_234567890',
