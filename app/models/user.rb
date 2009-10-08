@@ -70,4 +70,8 @@ class User < ActiveRecord::Base
   def administers
     App.find(:all, :joins => :administrations, :conditions => {:administrations => {:user_id => self}})
   end
+  
+  def administers?(app)
+    administers.include?(app)
+  end
 end
