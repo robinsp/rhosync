@@ -30,9 +30,6 @@ class AppsController < ApplicationController
     if logged_in?
       @apps = current_user.administers
       @clients = current_user.clients
-    else
-      login="anonymous"
-      @current_user=User.find 1
     end
 
     flash[:notice]="You have no existing apps" if @apps.empty?
