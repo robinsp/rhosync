@@ -49,4 +49,8 @@ class App < ActiveRecord::Base
       return user
     end
   end
+  
+  def administrators
+    User.find(:all, :joins => :administrations, :conditions => {:administrations => {:app_id => self}})
+  end
 end

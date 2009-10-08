@@ -69,6 +69,27 @@ describe App do
         @app.authenticate("existing@remedy.com", "password", nil).should be_nil
       end
     end
+    
+    describe "administrators" do
+      def create_administration(app, user)
+        Administration.create!(:app => app, :user => user)
+      end
+      
+      it "should find the administrators for an application" do 
+        rock_band_gear_app = Factory.create(:app, :name => "RockBandGear")
+        drummer = Factory.create(:user)
+        guitarist = Factory.create(:user)
+        create_administration(rock_band_gear_app, drummer)
+        create_administration(rock_band_gear_app, guitarist)
+        
+        news_paper_app = Factory.create(:app, :name => "NewsPapers")
+        journalist = Factory.create(:user)
+        create_administration(news_paper_app, journalist)
+        
+        rock_band_gear_app.administrators.should == [drummer, guitarist]
+      end
+      
+    end
   end
 
 end
