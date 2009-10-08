@@ -58,6 +58,10 @@ class User < ActiveRecord::Base
     u && u.authenticated?(password) ? u : nil
   end
   
+  def membership_of(app)
+    Membership.find_by_user_id_and_app_id(self.id, app.id)
+  end
+  
   def ping(callback_url,message=nil,vibrate=500,badge=nil,sound=nil)
     @result=""
     clients.each do |client|

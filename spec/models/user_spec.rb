@@ -66,6 +66,32 @@ describe User do
       end
     end
     
+    describe "membership_of(App)" do
+      before do 
+        @app_one = Factory(:app)
+        @app_two = Factory(:app)
+        @app_of_which_user_is_not_a_member = Factory(:app)
+        
+        @user = Factory(:user)
+        @user.apps << @app_one
+        @user.apps << @app_two
+      end
+      
+      it "should return the Memebership when user is a subscriber of app" do 
+        [@app_one, @app_two].each do |app|
+          @user.membership_of(app).should_not be_nil
+          @user.membership_of(app).should be_a(Membership)
+          @user.membership_of(app).user.should == @user
+          @user.membership_of(app).app.should == app
+        end
+      end
+      
+      it "should return nil if user is not a subscriber to the app" do 
+        @user.membership_of(@app_of_which_user_is_not_a_member).should be_nil
+      end
+      
+    end
+    
     describe "administers?(App)" do
       before do 
         @guitar_store = Factory.create(:app, :name => "GuitarStore")
