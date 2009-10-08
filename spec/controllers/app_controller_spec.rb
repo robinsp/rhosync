@@ -173,16 +173,15 @@ describe AppsController do
 
   end
 
-
-  describe "(examples only using mocks)" do 
-    describe "GET index" do 
-      describe "as logged in" do 
-        before do
-          @controller.stub(:logged_in?).and_return(true)
-          @user = mock("user", :null_object => true)
-          @controller.should_receive(:current_user).any_number_of_times.and_return(@user)
-        end
-        
+  describe "(examples only using mocks)" do
+    describe "authenticated user does" do
+      before do
+        @controller.stub(:logged_in?).and_return(true)
+        @user = mock("user", :null_object => true)
+        @controller.should_receive(:current_user).any_number_of_times.and_return(@user)
+      end
+      
+      describe "GET index" do 
         it "should assign all apps the user is administrator of" do 
           @user.should_receive(:administers).and_return(expected_apps = ["app1", "app2"])
           get :index
@@ -212,6 +211,39 @@ describe AppsController do
           get :index
           flash[:notice].should_not be_blank
         end
+      end
+    
+      describe "GET show" do 
+        before do
+          @app_id = "123"
+          @app = mock("App", :null_object => true)
+          App.should_receive(:find_by_permalink).with(@app_id).at_least(:once).and_return(@app)
+        end
+        
+        it "should assign isadmin to indicate if user is administrator of the current app or not" do
+          @user.should_receive(:administers?).with(@app).and_return(expected_response = "assign_to_isadmin")
+          get :show, :id => @app_id
+          assigns[:isadmin].should == expected_response
+        end
+        
+        it "should assign sub ( = membership of app)" do 
+          @user.should_receive(:membership_of).with(@app).and_return(expected_response = "assign_to_sub")
+          get :show, :id => @app_id
+          assigns[:sub].should == expected_response
+        end
+        
+        it "should assign users" do 
+          User.should_receive(:find).with(:all).and_return(expected_users = ["users array"])
+          get :show, :id => @app_id
+          assigns[:users].should == expected_users
+        end
+        
+        it "should assign sources" do 
+          @app.should_receive(:sources).and_return(expected_sources = ["sources"])
+          get :show, :id => @app_id
+          assigns[:sources].should == expected_sources
+        end
+        
       end
     end
   end
