@@ -27,21 +27,18 @@ class AppsController < ApplicationController
   # GET /apps
   # GET /apps.xml
   def index
-    if @current_user
-      login=@current_user.login
-      admins = @current_user.administrations
-      @apps=admins.map {|a| a.app}
-      @clients=@current_user.clients
+    if logged_in?
+      @apps = current_user.administers
+      @clients = current_user.clients
     else
       login="anonymous"
       @current_user=User.find 1
     end
 
-    if @apps.nil?
-      flash[:notice]="You have no existing apps"
-    end
-    @allapps=App.find :all
-    @subapps=@allapps.reject { |app| app.anonymous!=1 and !@current_user.apps.index(app) }
+    flash[:notice]="You have no existing apps" if @apps.empty?
+    
+    @allapps=App.all
+    @subapps=App.subscribable_by(current_user)
 
     respond_to do |format|
       format.html # index.html.erb

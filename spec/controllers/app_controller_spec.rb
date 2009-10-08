@@ -173,4 +173,46 @@ describe AppsController do
 
   end
 
+
+  describe "(examples only using mocks)" do 
+    describe "GET index" do 
+      describe "as logged in" do 
+        before do
+          @controller.stub(:logged_in?).and_return(true)
+          @user = mock("user", :null_object => true)
+          @controller.should_receive(:current_user).any_number_of_times.and_return(@user)
+        end
+        
+        it "should assign all apps the user is administrator of" do 
+          @user.should_receive(:administers).and_return(expected_apps = ["app1", "app2"])
+          get :index
+          assigns[:apps].should == expected_apps
+        end
+        
+        it "should assign user's clients" do 
+          @user.should_receive(:clients).and_return(expected_clients = ["client1", "client2"])
+          get :index
+          assigns[:clients].should == expected_clients
+        end
+        
+        it "should assign subscribable apps" do 
+          App.should_receive(:subscribable_by).with(@user).and_return( expected_apps = ["app1", "app2"] )
+          get :index
+          assigns[:subapps].should == expected_apps
+        end
+        
+        it "should assign all apps" do 
+          App.should_receive(:find).with(:all).and_return( expected_apps = ["app1", "app2"] )
+          get :index
+          assigns[:allapps].should == expected_apps
+        end
+        
+        it "should set flash notice unless user administers any apps" do 
+          @user.should_receive(:administers).and_return([])
+          get :index
+          flash[:notice].should_not be_blank
+        end
+      end
+    end
+  end
 end
