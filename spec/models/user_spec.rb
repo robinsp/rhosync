@@ -33,66 +33,72 @@ describe User do
     end.should_not change(User, :count)
   end
   
-  describe "administers()" do
-    it "should find the applications the user is adminitrator of" do
-      guitar_store = Factory.create(:app, :name => "GuitarStore")
-      piano_store = Factory.create(:app, :name => "PianoStore")
-      
-      musician = Factory.create(:user)
-      create_administration(guitar_store, musician)
-      create_administration(piano_store, musician)
-      
-      guitarist = Factory.create(:user)
-      create_administration(guitar_store, guitarist)
-      
-      truck_driver = Factory.create(:user)
-      
-      truck_driver.administers.should be_empty
-      
-      guitarist.administers.should include(guitar_store)
-      guitarist.administers.should_not include(piano_store)
-      
-      musician.administers.should include(piano_store, guitar_store)
-    end
-  end
-  
-  # TODO: Remove after has_and_belongs_to_many is implemented
-  def create_administration(app, user)
-    Administration.create!(:app => app, :user => user)
-  end
-  
-  describe "administers?(App)" do
-    before do 
-      @guitar_store = Factory.create(:app, :name => "GuitarStore")
-      @piano_store = Factory.create(:app, :name => "PianoStore")
-      
-      @musician = Factory.create(:user)
-      create_administration(@guitar_store, @musician)
-      create_administration(@piano_store, @musician)
-      
-      @guitarist = Factory.create(:user)
-      create_administration(@guitar_store, @guitarist)
-      
-      @truck_driver = Factory.create(:user)
+  describe "adminstrator association to apps" do
+    # TODO: I hoping to complete remove the Administation model and replace with 
+    # with a has_and_belongs_to_many association. Until we have sufficient tests to 
+    # do this safely, this kind of encasulation will have to do.  
+    
+    # TODO: Remove after habtm is implemented
+    def create_administration(app, user)
+      Administration.create!(:app => app, :user => user)
     end
     
-    it "should check if user is the administrator of an specific app" do 
-      @truck_driver.administers?(@piano_store).should be_false
-      @truck_driver.administers?(@guitar_store).should be_false
-      
-      @guitarist.administers?(@piano_store).should be_false
-      @guitarist.administers?(@guitar_store).should be_true
-      
-      @musician.administers?(@piano_store).should be_true
-      @musician.administers?(@guitar_store).should be_true
+    describe "administers()" do
+      it "should find the applications the user is adminitrator of" do
+        guitar_store = Factory.create(:app, :name => "GuitarStore")
+        piano_store = Factory.create(:app, :name => "PianoStore")
+        
+        musician = Factory.create(:user)
+        create_administration(guitar_store, musician)
+        create_administration(piano_store, musician)
+        
+        guitarist = Factory.create(:user)
+        create_administration(guitar_store, guitarist)
+        
+        truck_driver = Factory.create(:user)
+        
+        truck_driver.administers.should be_empty
+        
+        guitarist.administers.should include(guitar_store)
+        guitarist.administers.should_not include(piano_store)
+        
+        musician.administers.should include(piano_store, guitar_store)
+      end
     end
     
-    it "should return false if passed an unsaved app" do 
-      @musician.administers?(App.new(:name => "AnApp")).should be_false
-    end
-    
-    it "should return false if passed a 'nil' app" do 
-      @musician.administers?(nil).should be_false
+    describe "administers?(App)" do
+      before do 
+        @guitar_store = Factory.create(:app, :name => "GuitarStore")
+        @piano_store = Factory.create(:app, :name => "PianoStore")
+        
+        @musician = Factory.create(:user)
+        create_administration(@guitar_store, @musician)
+        create_administration(@piano_store, @musician)
+        
+        @guitarist = Factory.create(:user)
+        create_administration(@guitar_store, @guitarist)
+        
+        @truck_driver = Factory.create(:user)
+      end
+      
+      it "should check if user is the administrator of an specific app" do 
+        @truck_driver.administers?(@piano_store).should be_false
+        @truck_driver.administers?(@guitar_store).should be_false
+        
+        @guitarist.administers?(@piano_store).should be_false
+        @guitarist.administers?(@guitar_store).should be_true
+        
+        @musician.administers?(@piano_store).should be_true
+        @musician.administers?(@guitar_store).should be_true
+      end
+      
+      it "should return false if passed an unsaved app" do 
+        @musician.administers?(App.new(:name => "AnApp")).should be_false
+      end
+      
+      it "should return false if passed a 'nil' app" do 
+        @musician.administers?(nil).should be_false
+      end
     end
   end
 
