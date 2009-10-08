@@ -22,6 +22,18 @@ class App < ActiveRecord::Base
   has_many :configurations
 
   attr_accessor :delegate
+  
+  named_scope :unsubscribed_by, lambda {|user| 
+    {:include => :users, :conditions => ["memberships.user_id IS NULL OR memberships.user_id != ?", user] }
+  }
+  
+  named_scope :not_anonymous, :conditions => {:anonymous => false}
+  
+  private_class_method :unsubscribed_by, :not_anonymous
+  
+  def self.subscribable_by(user)
+   not_anonymous.unsubscribed_by(user) 
+  end
 
   def after_initialize
     @delegate = name.constantize rescue nil

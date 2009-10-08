@@ -88,7 +88,23 @@ describe App do
         
         rock_band_gear_app.administrators.should == [drummer, guitarist]
       end
-      
+    end
+    
+    describe "subscribable_by(User)" do 
+      it "should filter out apps already subscribed to by the user and apps with anonymous access" do
+        Rails.logger.debug "#################################33"
+        user = Factory(:user)
+        
+        currently_subscribed_app = Factory(:app, :name => "CurrentlySubscribed")
+        user.apps << currently_subscribed_app
+        
+        anonymous_app = Factory(:app, :anonymous => true, :name => "Anonumous")
+        
+        unsubscribed_one = Factory(:app, :name => "Unsubscribed One")
+        unsubscribed_two = Factory(:app, :name => "Unsubscribed Two")
+        
+        App.subscribable_by(user).should == [unsubscribed_one, unsubscribed_two]
+      end
     end
   end
 
