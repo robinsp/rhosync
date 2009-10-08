@@ -19,48 +19,11 @@ describe AppsController do
     @mock_app ||= mock_model(App, stubs)
   end
 
-
-
-  describe "responding to GET index" do
-
-    it "should expose all apps as @apps" do
-      pending("Test needs to be brought up to date.")
-      App.should_receive(:find).with(:all,{:conditions=>{:admin=>"quentin"}}).and_return([mock_app])
-      get :index
-      assigns[:apps].should == [mock_app]
-    end
-
-    describe "with mime type of xml" do
-
-      it "should render all apps as xml" do
-        pending("Test needs to be brought up to date.")
-        request.env["HTTP_ACCEPT"] = "application/xml"
-        App.should_receive(:find).with(:all,{:conditions=>{:admin=>"quentin"}}).and_return(apps = mock("Array of Apps"))
-        apps.should_receive(:to_xml).and_return("generated XML")
-        get :index
-        response.body.should == "generated XML"
-      end
-
-    end
-
-  end
-
   describe "responding to GET new" do
 
     it "should expose a new app as @app" do
       App.should_receive(:new).and_return(mock_app)
       get :new
-      assigns[:app].should equal(mock_app)
-    end
-
-  end
-
-  describe "responding to GET edit" do
-
-    it "should expose the requested app as @app" do
-      pending("Test needs to be brought up to date.")
-      App.should_receive(:find).with("37").and_return(mock_app)
-      get :edit, :id => "37"
       assigns[:app].should equal(mock_app)
     end
 
