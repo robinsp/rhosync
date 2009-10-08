@@ -86,13 +86,9 @@ class AppsController < ApplicationController
 
   # GET /apps/1/edit
   def edit
-    @users = User.find :all
-    @users.delete_if {|user| user.name=="anonymous"}
-    @admins= Administration.find_all_by_app_id @app.id
-    @isadmin=Administration.find_by_user_id_and_app_id @current_user.id,@app.id  # is the current user an admin?
-    if !@isadmin
-      redirect_to :action=>"show"
-    end
+    redirect_to(:action => :show) unless current_user.administers?(@app)
+    @users = User.all(:conditions => "name not like 'anonymous'")
+    @admins = @app.administrators
   end
 
   def add_user_to_app(login,app)

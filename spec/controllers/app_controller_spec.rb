@@ -213,37 +213,60 @@ describe AppsController do
         end
       end
     
-      describe "GET show" do 
+      describe "" do
         before do
           @app_id = "123"
           @app = mock("App", :null_object => true)
           App.should_receive(:find_by_permalink).with(@app_id).at_least(:once).and_return(@app)
         end
         
-        it "should assign isadmin to indicate if user is administrator of the current app or not" do
-          @user.should_receive(:administers?).with(@app).and_return(expected_response = "assign_to_isadmin")
-          get :show, :id => @app_id
-          assigns[:isadmin].should == expected_response
+        describe "GET show" do 
+          it "should assign isadmin to indicate if user is administrator of the current app or not" do
+            @user.should_receive(:administers?).with(@app).and_return(expected_response = "assign_to_isadmin")
+            get :show, :id => @app_id
+            assigns[:isadmin].should == expected_response
+          end
+          
+          it "should assign sub ( = membership of app)" do 
+            @user.should_receive(:membership_of).with(@app).and_return(expected_response = "assign_to_sub")
+            get :show, :id => @app_id
+            assigns[:sub].should == expected_response
+          end
+          
+          it "should assign users" do 
+            User.should_receive(:find).with(:all).and_return(expected_users = ["users array"])
+            get :show, :id => @app_id
+            assigns[:users].should == expected_users
+          end
+          
+          it "should assign sources" do 
+            @app.should_receive(:sources).and_return(expected_sources = ["sources"])
+            get :show, :id => @app_id
+            assigns[:sources].should == expected_sources
+          end
         end
         
-        it "should assign sub ( = membership of app)" do 
-          @user.should_receive(:membership_of).with(@app).and_return(expected_response = "assign_to_sub")
-          get :show, :id => @app_id
-          assigns[:sub].should == expected_response
+        describe "GET edit" do 
+          it "should assign all users except 'anonymous' " do 
+            User.should_receive(:find).with(:all, :conditions => "name not like 'anonymous'").and_return(expected_users = ["users array"])
+            get :edit, :id => @app_id
+            assigns[:users].should == expected_users
+            response.should be_success
+          end
+          
+          it "should assign admins" do 
+            @app.should_receive(:administrators).and_return(expected_admins = ["admins array"])
+            get :edit, :id => @app_id
+            assigns[:admins].should == expected_admins
+            response.should be_success
+          end
+          
+          it "should redirect to :show unless current_user is admin" do 
+            @user.should_receive(:administers?).with(@app).and_return(false)
+            get :edit, :id => @app_id
+            response.should redirect_to(:action => :show)
+          end
         end
-        
-        it "should assign users" do 
-          User.should_receive(:find).with(:all).and_return(expected_users = ["users array"])
-          get :show, :id => @app_id
-          assigns[:users].should == expected_users
-        end
-        
-        it "should assign sources" do 
-          @app.should_receive(:sources).and_return(expected_sources = ["sources"])
-          get :show, :id => @app_id
-          assigns[:sources].should == expected_sources
-        end
-        
       end
     end
   end

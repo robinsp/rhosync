@@ -90,7 +90,7 @@ function setVisibilityOfAddSubscriber() {
 <table>
 	<%@admins.each do |admin|%>
 		<tr>
-			<td><%=link_to admin.user.login+" (remove admin rights)",{:action=>:unadminister,:id=>@app.id,:administrator=>admin.user.login}%></td>
+			<td><%=link_to admin.login+" (remove admin rights)",{:action=>:unadminister,:id=>@app.id,:administrator=>admin.login}%></td>
 		</tr>
 	<%end%>
 </table>
