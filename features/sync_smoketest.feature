@@ -1,3 +1,4 @@
+@3rd-party
 Feature: Sync Smoke Test
   In order to avoid submitting patches with simple, yet fatal, errors 
   the Integrator
