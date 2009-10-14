@@ -21,14 +21,3 @@ end
 Then /^database has no "([^\"]*)"$/ do |model|
   eval("#{model.singularize}.all").should be_empty
 end
-
-Then /^I should see a link to "([^\"]*)"$/ do |link_text|
-  response.should have_tag 'a', link_text
-end
-
-Then /^I should see a non\-empty table of "([^\"]*)" objects$/ do |source_name|
-  response.should have_tag 'h1', source_name
-  response.should have_tag 'table#objects' do 
-    with_tag "tr", :minimum => 1
-  end
-end
