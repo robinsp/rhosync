@@ -81,7 +81,9 @@ require 'ar-extensions/import/mysql' if Rails::Configuration.new.database_config
 
 ActionController::Base.session_options[:session_expires] = 1.year.from_now
 
-APP_CONFIG = YAML.load_file("#{RAILS_ROOT}/config/settings.yml")[RAILS_ENV].symbolize_keys
+unless RAILS_ENV == "cucumber"
+  APP_CONFIG = YAML.load_file("#{RAILS_ROOT}/config/settings.yml")[RAILS_ENV].symbolize_keys
+end
 
 begin
   ActiveRecord::ConnectionAdapters::MysqlAdapter::NATIVE_DATABASE_TYPES[:primary_key] = "BIGINT NOT NULL auto_increment PRIMARY KEY"
